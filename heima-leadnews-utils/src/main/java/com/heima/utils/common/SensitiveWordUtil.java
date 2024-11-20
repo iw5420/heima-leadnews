@@ -112,12 +112,22 @@ public class SensitiveWordUtil {
 
     public static void main(String[] args) {
         List<String> list = new ArrayList<>();
-        list.add("法轮");
-        list.add("法轮功");
-        list.add("冰毒");
+        list.add("私人侦探");
+        list.add("信用卡提现");
+        list.add("广告代理");
+
+        //初始化敏感词库
         initMap(list);
-        String content="我是一个好人，并不会卖冰毒，也不操练法轮功,我真的不卖冰毒";
+
+
+        String content="江户川柯南私人侦探，可以帮你解决：商务调查，要账清债，企业打假，寻人找人，财产调查，私人调查，电话：12345678901";
+        //文本中查找是否包含敏感词
         Map<String, Integer> map = matchWords(content);
-        System.out.println(map);
+        if(map.size() > 0){
+            System.out.println(map);
+        }else {
+            System.out.println("没有找到敏感词");
+        }
+
     }
 }

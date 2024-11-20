@@ -21,6 +21,7 @@ import com.heima.utils.thread.WmThreadLocalUtil;
 import com.heima.wemedia.mapper.WmMaterialMapper;
 import com.heima.wemedia.mapper.WmNewsMapper;
 import com.heima.wemedia.mapper.WmNewsMaterialMapper;
+import com.heima.wemedia.service.WmNewsAutoScanService;
 import com.heima.wemedia.service.WmNewsService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -92,6 +93,13 @@ public class WmNewsServiceImpl extends ServiceImpl<WmNewsMapper, WmNews> impleme
         return responseResult;
     }
 
+    @Autowired
+    private WmNewsAutoScanService wmNewsAutoScanService;
+
+    @Autowired
+
+    WmNewsMapper wmNewsMapper;
+
     /**
      * 發布修改文章或保存為草稿
      * @param dto
@@ -128,13 +136,16 @@ public class WmNewsServiceImpl extends ServiceImpl<WmNewsMapper, WmNews> impleme
             return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);
         }
 
-        //3.不是草稿，保存文章內容圖片與素材的關聯
+        //3.不是草稿，保存文章內容圖片與素材的關系
         //獲取到文章內容中的圖片信息
         List<String> materials =  ectractUrlInfo(dto.getContent());
         saveRelativeInfoForContent(materials,wmNews.getId());
 
         //4.不是草稿，保存文章封面圖片與素材的關系，如果當前布局是自動，需要匹配封面圖片
         saveRelativeInfoForCover(dto,wmNews,materials);
+        wmNews = wmNewsMapper.selectById(wmNews.getId());
+        //審核文章
+        wmNewsAutoScanService.autoScanWmNews(wmNews);
 
         return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);
 
@@ -177,7 +188,6 @@ public class WmNewsServiceImpl extends ServiceImpl<WmNewsMapper, WmNews> impleme
             }
             updateById(wmNews);
         }
-        //第二個功能：保存封面圖片與素材的關系
         if(images != null && images.size() > 0){
             saveRelativeInfo(images,wmNews.getId(),WemediaConstants.WM_COVER_REFERENCE);
         }
@@ -204,7 +214,7 @@ public class WmNewsServiceImpl extends ServiceImpl<WmNewsMapper, WmNews> impleme
      * @param type
      */
     private void saveRelativeInfo(List<String> materials, Integer newsId, Short type) {
-        if(materials != null && !materials.isEmpty()){
+        if(materials!=null && !materials.isEmpty()){
             //通過圖片的url查詢素材的id
             List<WmMaterial> dbMaterials = wmMaterialMapper.selectList(Wrappers.<WmMaterial>lambdaQuery().in(WmMaterial::getUrl, materials));
 
@@ -223,6 +233,7 @@ public class WmNewsServiceImpl extends ServiceImpl<WmNewsMapper, WmNews> impleme
             //批量保存
             wmNewsMaterialMapper.saveRelations(idList,newsId,type);
         }
+
     }
 
 
@@ -268,6 +279,7 @@ public class WmNewsServiceImpl extends ServiceImpl<WmNewsMapper, WmNews> impleme
             wmNewsMaterialMapper.delete(Wrappers.<WmNewsMaterial>lambdaQuery().eq(WmNewsMaterial::getNewsId,wmNews.getId()));
             updateById(wmNews);
         }
+
     }
 
 

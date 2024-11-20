@@ -44,7 +44,7 @@ public class ArticleFreemarkerTest {
     @Test
     public void createStaticUrlTest() throws Exception {
         //1.獲取文章內容
-        ApArticleContent apArticleContent = apArticleContentMapper.selectOne(Wrappers.<ApArticleContent>lambdaQuery().eq(ApArticleContent::getArticleId, 1383827787629252610L));
+        ApArticleContent apArticleContent = apArticleContentMapper.selectOne(Wrappers.<ApArticleContent>lambdaQuery().eq(ApArticleContent::getArticleId, 1858345475153989633L));
         if(apArticleContent != null && StringUtils.isNotBlank(apArticleContent.getContent())){
             //2.文章內容通過freemarker生成html文件
             StringWriter out = new StringWriter();
