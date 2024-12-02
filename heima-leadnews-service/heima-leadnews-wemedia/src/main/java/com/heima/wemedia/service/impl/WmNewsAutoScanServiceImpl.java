@@ -69,8 +69,8 @@ public class WmNewsAutoScanServiceImpl implements WmNewsAutoScanService {
             }
             //回填article_id
             wmNews.setArticleId((Long) responseResult.getData());
-            updateWmNews(wmNews,(short) 9,"审核成功");
-
+            updateWmNews(wmNews,(short) 9,"審核成功");
+            log.info("審核成功");
         }
     }
 
