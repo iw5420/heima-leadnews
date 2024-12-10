@@ -7,43 +7,48 @@ import java.util.List;
 
 @Data
 public class WmNewsDto {
-    
+
     private Integer id;
-     /**
-     * 标题
+    /**
+     * 標題
      */
     private String title;
-     /**
-     * 频道id
+    /**
+     * 頻道id
      */
     private Integer channelId;
-     /**
-     * 标签
+    /**
+     * 標簽
      */
     private String labels;
-     /**
-     * 发布时间
+    /**
+     * 發布時間
      */
     private Date publishTime;
-     /**
-     * 文章内容
+    /**
+     * 文章內容
      */
     private String content;
-     /**
-     * 文章封面类型  0 无图 1 单图 3 多图 -1 自动
+    /**
+     * 文章封面類型  0 無圖 1 單圖 3 多圖 -1 自動
      */
     private Short type;
-     /**
-     * 提交时间
+    /**
+     * 提交時間
      */
-    private Date submitedTime; 
-     /**
-     * 状态 提交为1  草稿为0
+    private Date submitedTime;
+    /**
+     * 狀態 提交為1  草稿為0
      */
     private Short status;
-     
-     /**
-     * 封面图片列表 多张图以逗号隔开
+
+    /**
+     * 封面圖片列表 多張圖以逗號隔開
      */
     private List<String> images;
+
+    /**
+     * 上下架 0 下架  1 上架
+     */
+    private Short enable;
 }
