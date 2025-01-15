@@ -20,39 +20,46 @@ import reactor.core.publisher.Mono;
 public class AuthorizeFilter implements Ordered, GlobalFilter {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-        //1.获取request和response对象
+        //1.獲取request和response對象
         ServerHttpRequest request = exchange.getRequest();
         ServerHttpResponse response = exchange.getResponse();
 
-        //2.判断是否是登录
+        //2.判斷是否是登錄
         if(request.getURI().getPath().contains("/login")){
             //放行
             return chain.filter(exchange);
         }
 
-
-        //3.获取token
+        //3.獲取token
         String token = request.getHeaders().getFirst("token");
 
-        //4.判断token是否存在
+        //4.判斷token是否存在
         if(StringUtils.isBlank(token)){
             response.setStatusCode(HttpStatus.UNAUTHORIZED);
             return response.setComplete();
         }
 
-        //5.判断token是否有效
+        //5.判斷token是否有效
         try {
             Claims claimsBody = AppJwtUtil.getClaimsBody(token);
-            //是否是过期
+            //是否是過期
             int result = AppJwtUtil.verifyToken(claimsBody);
             if(result == 1 || result  == 2){
                 response.setStatusCode(HttpStatus.UNAUTHORIZED);
                 return response.setComplete();
             }
-        }catch (Exception e){
+
+            //獲取用戶信息
+            Object userId = claimsBody.get("id");
+
+            //存儲header中
+            ServerHttpRequest serverHttpRequest = request.mutate().headers(httpHeaders -> {
+                httpHeaders.add("userId", userId + "");
+            }).build();
+            //重置請求
+            exchange.mutate().request(serverHttpRequest);
+        } catch (Exception e) {
             e.printStackTrace();
-            response.setStatusCode(HttpStatus.UNAUTHORIZED);
-            return response.setComplete();
         }
 
         //6.放行
@@ -60,7 +67,7 @@ public class AuthorizeFilter implements Ordered, GlobalFilter {
     }
 
     /**
-     * 优先级设置  值越小  优先级越高
+     * 優先級設置  值越小  優先級越高
      * @return
      */
     @Override
